@@ -6,8 +6,8 @@ enum Op {
     Sub(usize, usize, usize),
     Mul(usize, usize, usize),
     Div(usize, usize, usize),
-    If(Op::Val, Op::ElseJmp),
-    ElseJmp(Op::Val),
+    If(Box<Op>, Box<Op>),
+    ElseJmp(Box<Op>),
     Exit(i32),
     Val(usize)
 //     U8(u8),
@@ -18,7 +18,7 @@ enum Op {
 //     I64(I64),
 //     F64(f32),
 //     F64(f64),
-// }
+}
 
 enum MathOp {
     Add, Sub, Mul, Div
@@ -57,7 +57,6 @@ fn main() {
 		ops[out] = Op::Val(run_math_op(ops[n1], ops[n2], MathOp::Div));
 		index += 1;
 	    },
-	    Op::If()
 	    Op::Exit(code) => {
 		println!("{:?}", ops);
 		std::process::exit(code);
