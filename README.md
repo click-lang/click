@@ -14,9 +14,9 @@ contract system that are very powerful.
 ## Clojure
 While Racket provides a very solid base for the language, Clojure has some
 must-have features as well. Clojure's lazy immutable data structures, it's
-protocol system for solving the expression problem, it's solution to
-multi-threading, as well as some simple nicities like concise lambda syntax and
-a simple way to declare functions that take a variable number of arguments. 
+protocol system, it's solution to multi-threading, as well as some simple 
+nicities like concise lambda syntax and a simple way to declare functions that 
+take a variable number of arguments. 
 
 ## Common Lisp
 Common Lisp has Sly and SLIME, the most powerful REPL available for interactive
