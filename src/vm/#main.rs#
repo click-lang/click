@@ -79,12 +79,7 @@ fn main() {
 		println!("{:?}", ops);
 		std::process::exit(code);
 	    },
-	    _ => println!("Not implemented yet!")
-	}
-    }
-}
-
-
+	    _ => println!("Not implemented 
 fn run_math_op(n1: Num, n2: Num, op: MathOp) -> Code {
     let float_op = |v1, v2| match op {
 	MathOp::Add => Code::Type(Type::Num(Num::Double(v1 + v2))),
