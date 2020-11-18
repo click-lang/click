@@ -1,6 +1,7 @@
-#lang racket/base
+(module click/tools/help racket/base
+  (provide help-subcommand)
 
-(define [click-help {term ""}]
-  (println "Not implemented yet"))
+  (define [help-subcommand argv]
+    (println "Not implemented yet"))
 
-(provide click-help)
+  )
