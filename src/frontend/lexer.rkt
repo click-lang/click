@@ -1,18 +1,14 @@
 (module click/reader typed/racket/base
   (require racket/match
            racket/format)
-  (require datatype
-           data/either
-           data/maybe
-           "types.rkt"
-           dyoo-while-loop)
+  (require "../types.rkt")
   (provide tokenize)
 
   (: tokenize (-> String (Listof Token)))
   (define [tokenize input]
     (cons (Token 0 0 'l_paren "(") (lex input 1 1)))
 
-  (: lex (-> String Integer Integer (Listof Token)))
+  (: lex (-> String Natural Natural (Listof Token)))
   (define [lex input row col]
     (if (string=? input "")
         (list (Token 0 0 'r_paren ")"))
@@ -66,7 +62,7 @@
       [(#\( #\) #\[ #\] #\{ #\} #\space #\, #\" #\') #true]
       [else #false]))
 
-  (: lex-symbol (-> String Integer Integer TokenType Token))
+  (: lex-symbol (-> String Natural Natural TokenType Token))
   (define [lex-symbol input row col type]
     (define token
       (for/fold ([token : String ""])
@@ -75,7 +71,7 @@
         (~a token char)))
     (Token row col type token))
 
-  (: lex-string (-> String Integer Integer Token))
+  (: lex-string (-> String Natural Natural Token))
   (define [lex-string input row col]
     (define token
       (for/fold ([token : String "\""])
@@ -85,7 +81,7 @@
 
     (Token row col 'string (~a token "\"")))
 
-  (: lex-number (-> String Integer Integer Token))
+  (: lex-number (-> String Natural Natural Token))
   (define [lex-number input row col]
     (define float? : Boolean #f)
     (define token
@@ -101,5 +97,4 @@
                    char]
                   [else
                    (error "UNEXPECTED TOKEN")]))))
-
     (Token row col (if float? 'float 'integer) token)))

@@ -2,7 +2,7 @@
   (require racket/match
            racket/format
            typed/racket/class)
-  (require "types.rkt")
+  (require "../types.rkt")
 
   (provide expander)
 

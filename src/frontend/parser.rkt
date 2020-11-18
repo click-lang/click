@@ -2,7 +2,7 @@
   (require racket/match
            racket/format
            typed/racket/class)
-  (require "types.rkt")
+  (require "../types.rkt")
 
   (provide parse)
 
@@ -61,9 +61,11 @@
         [(Some (Token r c 'r_paren _)) (error 'UnexpectedClosingParen)]
         [(Some (Token r c 'l_paren _)) (parse-list reader 'l_paren 'r_paren)]
         [(Some (Token r c 'r_brace _)) (error 'UnexpectedClosingBrace)]
+        ;; Insert the `':sb` metadata when it's a square bracket []
         [(Some (Token r c 'l_brace _))
          (cons ':sb (parse-list reader 'l_brace 'r_brace))]
         [(Some (Token r c 'r_curly _)) (error 'UnexpectedClosingCurly)]
+        ;; Insert the `':cb` metadata when it's a curly bracket {}
         [(Some (Token r c 'l_curly _))
          (cons ':cb (parse-list reader 'l_curly 'r_curly))]
         ;; Any atomic value: numbers, strings, symbols, etc
