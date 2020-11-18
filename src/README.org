@@ -1,0 +1,45 @@
+#+TITLE: Click/src
+#+AUTHOR: Philip Dumaresq
+
+This is the main directory for the source code of the Click compiler and tools. The code tries to
+follow a nano-pass style architecture, keeping each step in the compiler as simple as possible. For
+example, the type checker runs in several phases, the first one will simply go and tag all the types
+that we know. The overall structure should be pretty self-explanatory, but it breaks down as
+follows:
+
+* Front-end 
+
+This section is minimal. It contains the code for:
+- Lexer
+- Parser
+- reader-macro expansion
+- type checking
+
+Even though Click uses s-expressions, it doesn't use Racket's built-in reader to parse the source
+code. The reason for this was because I wanted something that's more familiar once I re-write this
+in Click itself.
+
+* backend
+
+This directory contains the backend for the Click compiler. It will compile all of the Click source
+code into Rust for now. The goal is to get Click compiling to LLVM, but since Click's semantics
+aren't all that different from Rust, it will compile to Rust using ARC semantics instead of Rust's
+reference counter and borrow checker for memory management.
+
+* lib
+
+This directory contains the source code for the Click standard library. The standard library is
+written in Click itself. For now, this contains nothing, because Click can't compile yet lol
+
+* tools 
+
+This directory contains all the tools that you'll use to interface directly with the Click
+programming language, CVM, package manager, or anything else.
+
+* vm
+
+*OUTDATED*: I no longer plan on having this run on a VM. I'm going to try native compilation with LLVM
+or compile to Rust.
+
+This directory contains the source code for the CVM, the Click Virtual Machine. The virtual machine
+is a bytecode interpreter meant to operate well with dynamic and functional programming languages.

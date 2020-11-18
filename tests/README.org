@@ -1,0 +1,4 @@
+#+TITLE: Tests
+
+This is the directory for all of the unit tests. Everything in Click should be thoroughly tested to
+ensure everything is working. The directory structure for the tests mirrors that of the ~src~ directory.
