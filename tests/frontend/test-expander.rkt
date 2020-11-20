@@ -1,36 +1,34 @@
 #lang racket/base
 
 (require rackunit)
-(require "../src/frontend/lexer.rkt"
-         "../src/frontend/expander.rkt"
-         "../src/frontend/parser.rkt"
-         "../src/frontend/types.rkt")
+(require "../../src/compiler.rkt"
+         "../../src/types.rkt")
 
 (test-equal?
  "Basic parentheses test"
- (expander (parse (tokenize "()")))
+ (compile/macro-expand "()")
  '(()))
 
 (test-equal?
  "Basic bracket test"
- (expander (parse (tokenize "[]")))
+ (compile/macro-expand "[]")
  '((:sb)))
 
 (test-equal?
  "Basic curly brace test"
- (expander (parse (tokenize "{}")))
+ (compile/macro-expand "{}")
  '((:cb)))
 
 (test-equal?
  "Basic function call test"
- (expander (parse (tokenize "(+ 1 2)")))
+ (compile/macro-expand "(+ 1 2)")
  `((,(Token 1 2 'symbol "+")
     ,(Token 1 4 'integer "1")
     ,(Token 1 6 'integer "2"))))
 
 (test-equal?
  "Two function calls test"
- (expander (parse (tokenize "(let x 10) (+ x 2)")))
+ (compile/macro-expand "(let x 10) (+ x 2)")
  `((,(Token 1 2 'symbol "let")
     ,(Token 1 6 'symbol "x")
     ,(Token 1 8 'integer "10"))
@@ -40,9 +38,9 @@
 
 (test-equal?
  "Nested let a-la Clojure"
- (expander (parse (tokenize
+ (compile/macro-expand 
                    "(let [x 10]
-  (+ x 2))")))
+  (+ x 2))")
  `((,(Token 1 2 'symbol "let")
     (:sb
      ,(Token 1 7 'symbol "x")
@@ -53,13 +51,13 @@
 
 (test-equal?
  "Defining a fuller function"
- (expander (parse (tokenize
+ (compile/macro-expand 
                    "(let f [x y]
   (let sum (+ x y))
   (println #i\"Sum of {x} and {y} is {sum}\")
   sum)
 
-(f 10 20)")))
+(f 10 20)")
  `((,(Token 1 2 'symbol "let")
     ,(Token 1 6 'symbol "f")
     (:sb ,(Token 1 9 'symbol "x") ,(Token 1 11 'symbol "y"))
