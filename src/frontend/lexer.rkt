@@ -49,9 +49,14 @@
           [#\# (let* ([token (lex-symbol input row col 'reader)]
                       [len (string-length (Token-value token))])
                  (cons token (lex (substring input len) row (+ col len))))]
-          [#\: (let* ([token (lex-symbol input row col 'keyword)]
-                      [len (string-length (Token-value token))])
-                 (cons token (lex (substring input len) row (+ col len))))]
+          [#\: 
+           (let* ([token
+                   (lex-symbol input row col
+                               (if (char-whitespace? (string-ref input 1))
+                                   'symbol
+                                   'keyword))]
+                  [len (string-length (Token-value token))])
+             (cons token (lex (substring input len) row (+ col len))))]
           [_ (let* ([token (lex-symbol input row col 'symbol)]
                     [len (string-length (Token-value token))])
                (cons token (lex (substring input len) row (+ col len))))])))
