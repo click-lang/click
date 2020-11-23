@@ -4,7 +4,10 @@
            typed/racket/class)
   (require "../types.rkt")
 
-  (provide macro-expand)
+  (provide macro-expand
+           expand-let
+           expand-match
+           expand-cond)
 
   #|
   This function will expand basic macros as determined by the # prefix.
@@ -23,14 +26,13 @@
       [(cons ':cb xs) (cons ':cb xs)]
       [(cons (Token a b c "let") xs)
        (expand-let (cons (Token a b c "let") xs))]
+      [(cons (Token a b c "cond") xs)
+       (expand-cond (cons (Token a b c "cond") xs))]
       [(cons (Token a b c d) xs)
        (cons (Token a b c d) (macro-expand xs))]
       [(cons (list exprs ...) xs)
        (cons (macro-expand exprs) (macro-expand xs))]
       [(list) (list)]))
-
-  (: expand-cond (-> Ast Ast))
-  (define [expand-cond stx] stx)
 
   (: expand-let (-> Ast Ast))
   (define [expand-let stx]
@@ -73,6 +75,37 @@
        (append (list args (Token row col 'symbol "=>")
                      (cons (Token row col 'symbol "do") body))
                (expand-multi-arity-let xs))])) 
+
+  (: expand-cond (-> Ast Ast))
+  (define [expand-cond stx]
+    (match stx
+      [(list) (list)]
+      [(list (Token a b c "cond") x y z conds ...)
+       (append (list (Token a b c "if"))
+               (list x)
+               (list z)
+               (expand-cond conds))]
+      [(list (Token a b c "else") (Token x y z "=>") body) (list body)]
+      [(list (Token a b c d) (Token _ _ _ "=>") body conds ...)
+       (list (append (list (Token a b c "if"))
+                     (list (Token a b c d))
+                     (list body)
+                     (expand-cond conds)))]))
+
+  (: expand-match (-> Ast Ast))
+  (define [expand-match stx]
+    (match stx
+      [(list) (list)]
+      [(list (Token a b c "match") patterns ...)
+       (cons (Token a b c "match") (expand-match patterns))]
+      [(list p (Token x y z "=>") body patts ...)
+       (list (Token x y z "if") p body (expand-match patts))]))
+
+  (: token-from (-> Token TokenType String Token))
+  (define [token-from token new-type new-value]
+    (define row (Token-row token))
+    (define col (Token-col token))
+    (Token row col new-type new-value))
 
   (: get-first-token (-> Ast Token))
   (define [get-first-token stx]

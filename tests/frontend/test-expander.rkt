@@ -6,6 +6,11 @@
  "../../src/compiler.rkt"
  "../../src/types.rkt")
 
+;; I can't just test against the output of the parser if I pass to the parser
+;; what the code should expand to because the tokens will have a different row
+;; and col value since the expander will use the row and col values from other
+;; tokens in the expression.
+
 (test-equal?
  "Basic parentheses test"
  (compile/macro-expand "()")
@@ -108,4 +113,45 @@
             ,(Token 1 45 'symbol "x")
             ,(Token 1 47 'symbol "y")))))))))
   
+  )
+
+;;; Test expand cond
+(begin
+  (test-equal?
+   "Basic if/else"
+   (compile/macro-expand
+    "(cond a => b, else => c)")
+   `((,(Token 1 2 'symbol "if")
+      ,(Token 1 7 'symbol "a")
+      ,(Token 1 12 'symbol "b")
+      ,(Token 1 23 'symbol "c"))))
+
+  (test-equal?
+   "If, else-if, else"
+   (compile/macro-expand
+    "(cond a => b, c => d, else => e)")
+   `((,(Token 1 2 'symbol "if")
+      ,(Token 1 7 'symbol "a")
+      ,(Token 1 12 'symbol "b")
+      (,(Token 1 15 'symbol "if")
+       ,(Token 1 15 'symbol "c")
+       ,(Token 1 20 'symbol "d")
+       ,(Token 1 31 'symbol "e")))))
+
+  (test-equal?
+   "If, else-if, else"
+   (compile/macro-expand
+    "(cond a => (let {x 10} (+ x 20)), c => d, else => e)")
+   `((,(Token 1 2 'symbol "if")
+      ,(Token 1 7 'symbol "a")
+      (,(Token 1 13 'symbol "let")
+       (:cb ,(Token 1 18 'symbol "x")
+            ,(Token 1 20 'integer "10"))
+       (,(Token 1 25 'symbol "+")
+        ,(Token 1 27 'symbol "x")
+        ,(Token 1 29 'integer "20")))
+      (,(Token 1 35 'symbol "if")
+       ,(Token 1 35 'symbol "c")
+       ,(Token 1 40 'symbol "d")
+       ,(Token 1 51 'symbol "e")))))
   )
